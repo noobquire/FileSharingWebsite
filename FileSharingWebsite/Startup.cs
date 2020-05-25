@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using FileSharingWebsite.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
@@ -11,6 +12,7 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.EntityFrameworkCore;
 using FileSharingWebsite.Data;
 using FileSharingWebsite.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
@@ -37,7 +39,23 @@ namespace FileSharingWebsite
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews();
             services.AddRazorPages();
+            services.AddMemoryCache();
             services.AddScoped<IFileService, FileService>();
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("ManageFile",
+                    builder =>
+                    {
+                        builder.Requirements.Add(new SameAuthorRequirement());
+
+                    });
+                options.AddPolicy("AccessSharedFile", builder =>
+                    {
+                        builder.Requirements.Add(new CanDownloadRequirement());
+                    });
+            });
+            services.AddSingleton<IAuthorizationHandler, UploadedFileManagementAuthorizationHandler>();
+            services.AddSingleton<IAuthorizationHandler, UploadedFileSharingAuthorizationHandler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

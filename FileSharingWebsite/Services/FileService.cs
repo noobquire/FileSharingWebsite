@@ -7,22 +7,24 @@ using FileSharingWebsite.Data;
 using FileSharingWebsite.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace FileSharingWebsite.Services
 {
     public class FileService : IFileService
     {
         private readonly ApplicationDbContext _context;
-        public FileService(ApplicationDbContext context)
+        private readonly IMemoryCache _cache;
+        public FileService(ApplicationDbContext context, IMemoryCache cache)
         {
             _context = context;
+            _cache = cache;
         }
         public async Task<UploadedFile> SaveAsync(IFormFile file, string authorId)
         {
             var id = Guid.NewGuid();
             var extension = Path.GetExtension(file.FileName);
             var path = Path.Combine(Environment.CurrentDirectory, "User Files", id.ToString() + extension);
-            var author = _context.Users.Find(authorId);
 
             var newFile = new UploadedFile()
             {
@@ -34,7 +36,7 @@ namespace FileSharingWebsite.Services
                 Extension = extension,
                 Size = file.Length,
                 MediaType = file.ContentType,
-                Author = author
+                Author = authorId
             };
 
             // write file to wwwroot
@@ -67,7 +69,13 @@ namespace FileSharingWebsite.Services
 
         public async Task<UploadedFile> GetFileDetailsAsync(Guid id)
         {
-            return await _context.Files.FindAsync(id);
+            if (!_cache.TryGetValue(id, out UploadedFile file))
+            {
+                file = await _context.Files.FindAsync(id);
+                _cache.Set(id, file, new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromMinutes(10)));
+            }
+
+            return file;
         }
 
         public async Task DeleteFileAsync(Guid id)
@@ -79,7 +87,7 @@ namespace FileSharingWebsite.Services
 
         public async Task<IEnumerable<UploadedFile>> UserFilesAsync(string userId)
         {
-            var files = _context.Files.Where(f => f.Author.Id == userId);
+            var files = _context.Files.Where(f => f.Author == userId);
             return await files.ToListAsync();
         }
     }

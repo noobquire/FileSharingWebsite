@@ -20,6 +20,10 @@ namespace FileSharingWebsite.Models
         public string Extension { get; set; }
         [MaxLength(100)]
         public string MediaType { get; set; }
-        public IdentityUser Author { get; set; }
+        /// <summary>
+        /// Id of the author
+        /// </summary>
+        public string Author { get; set; }
+        public bool Published { get; set; }
     }
 }

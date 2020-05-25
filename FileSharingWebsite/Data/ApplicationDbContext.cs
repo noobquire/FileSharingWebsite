@@ -8,11 +8,11 @@ using Microsoft.EntityFrameworkCore.Internal;
 
 namespace FileSharingWebsite.Data
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public sealed class ApplicationDbContext : IdentityDbContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
-        { 
+        {
         }
 
         public DbSet<UploadedFile> Files { get; set; }

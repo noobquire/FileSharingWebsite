@@ -1,0 +1,62 @@
+﻿@using FileSharingWebsite.Models
+@model IEnumerable<FileSharingWebsite.Models.UploadedFile>
+
+@{
+    ViewBag.Title = "My files";
+    Layout = "_Layout";
+}
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Date uploaded</th>
+            <th scope="col">Downloads</th>
+            <th scope="col">Size</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (UploadedFile file in @Model)
+        {
+            <tr>
+                <td>
+                    <a asp-controller="Files" asp-action="Details" asp-route-id="@file.Id">
+                        @file.Name
+                    </a>
+                </td>
+                <td>@file.DateUploaded</td>
+                <td>@file.Downloads</td>
+                <td>@file.Size bytes</td>
+                <td>
+                    <a class="btn btn-primary" asp-controller="Files" asp-action="Download" asp-route-id="@file.Id">
+                        Download
+                    </a>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#deleteModal">
+                        Delete
+                    </button>
+                    
+                    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="deleteModalLabel">Modal title</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    Delete @file.Name?
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                    <a class="btn btn-primary" asp-controller="Files" asp-action="Delete" asp-route-id="@file.Id" >Delete</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

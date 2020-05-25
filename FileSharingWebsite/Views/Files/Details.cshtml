@@ -1,0 +1,27 @@
+﻿@model FileSharingWebsite.Models.UploadedFile
+
+@{
+    ViewBag.Title = "File details";
+    Layout = "_Layout";
+}
+
+<h2>File details - @Model.Name</h2>
+
+<dl class="row">
+    <dt class="col-sm-3">File name:</dt>
+    <dd class="col-sm-9">@Model.Name</dd>
+
+    <dt class="col-sm-3">Date uploaded:</dt>
+    <dd class="col-sm-9">@Model.DateUploaded</dd>
+
+    <dt class="col-sm-3">Downloads:</dt>
+    <dd class="col-sm-9">@Model.Downloads</dd>
+
+    <dt class="col-sm-3">Data type:</dt>
+    <dd class="col-sm-9">@Model.MediaType</dd>
+
+    <dt class="col-sm-3">Size:</dt>
+    <dd class="col-sm-9">@Model.Size bytes</dd>
+</dl>
+
+<a class="btn btn-primary" asp-controller="Files" asp-action="Download" asp-route-id="@Model.Id">Download</a>

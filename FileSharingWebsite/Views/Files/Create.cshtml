@@ -1,0 +1,14 @@
+﻿@{
+    ViewBag.Title = "Upload file";
+    Layout = "_Layout";
+}
+
+<h2>Upload file</h2>
+
+<form asp-controller="Files" asp-action="Create" method="post" enctype="multipart/form-data">
+    <div class="form-group custom-file col-md-3">
+        <input class="custom-file-input" type="file" name="file" id="file" />
+        <label class="custom-file-label" for="file">Choose file</label>
+    </div>
+    <button class="btn btn-primary mt-1" type="submit">Upload file</button>
+</form>
